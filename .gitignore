@@ -1,0 +1,9 @@
+node_modules/
+tmp/
+.DS_Store
+.idea
+.sass-cache
+.tmp
+dist
+*.iml
+bower_components

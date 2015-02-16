@@ -1,0 +1,13 @@
+app
+test
+node_modules
+.tmp
+.sass-cache
+bower_components
+*.iml
+.idea
+.DS_Store
+package.json
+Gruntfile.js
+bower.json
+README.md

@@ -1,0 +1,52 @@
+// bower:scss
+// endbower
+
+$primary-color: #f2aa47;
+$secondary-color: #588687;
+
+$body-font-family: "Open Sans", sans-serif;
+
+$global-radius: 2px;
+
+// foundation
+@import "foundation/scss/foundation";
+// end foundation
+
+a {
+  cursor: pointer;
+}
+
+button, .button {
+  @include radius($button-radius);
+  &.postfix {
+    @include radius(0 $button-radius $button-radius 0);
+  }
+}
+
+fieldset {
+  border: none;
+  padding: 0;
+  margin: 0;
+}
+
+h1 {
+  margin-top: 20px;
+}
+
+p {
+  font-size: 1.2rem;
+  font-weight: 300;
+}
+
+select[multiple] {
+  background-image: none;
+  height: 7em;
+}
+
+[ng\:cloak], [ng-cloak], [data-ng-cloak], [x-ng-cloak], .ng-cloak, .x-ng-cloak {
+  display: none !important;
+}
+
+.label {
+  @include radius($global-radius);
+}
