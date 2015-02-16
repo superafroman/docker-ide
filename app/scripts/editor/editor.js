@@ -15,19 +15,32 @@ angular.module('dockerIde')
 
             var lines = [];
 
+            function clearWidget(widget) {
+              widget.clear();
+            }
+
             function handleChange(instance, change) {
               $log.debug('Handling codemirror change event.', change);
 
-              var lineNumber = change.from.line,
+              var lineNumber = change.to.line,
                   lastLine = instance.lastLine();
 
+              if (change.text.join('').length === 0) {
+                $log.debug('No change, not re-building.');
+                return;
+              }
+
               for (var i = lineNumber; i <= lastLine; i++) {
+
+                var widgets = instance.lineInfo(i).widgets;
+                if (widgets) {
+                  widgets.forEach(clearWidget);
+                }
+
                 lines[i] = new Line({
                   text: instance.getLine(lineNumber),
                   lineNumber: lineNumber,
-                  changed: new Date(),
-                  codeMirror: instance,
-                  lines: lines
+                  codeMirror: instance
                 });
               }
             }
@@ -36,10 +49,14 @@ angular.module('dockerIde')
               var parentImageId = null;
               lines.some(function(line) {
                 if (line.isPending()) {
+                  $log.debug('Found pending line, waiting for completion. Line number:', line.lineNumber);
                   return true;
                 }
                 if (line.isDirty()) {
-                  if (new Date() - line.changed > 1000) {
+                  $log.debug('Found dirty line. Line number:', line.lineNumber);
+                  if (line.isSettled()) {
+                    $log.debug('Line settled, building image.');
+
                     var dockerfile = line.text;
 
                     if (parentImageId) {
@@ -54,12 +71,12 @@ angular.module('dockerIde')
                           $log.debug('Image built for line ' + line.lineNumber);
                           line.setImageId(result.imageId);
                         } else {
-                          $log.debug('Image build failed for line ' + line.lineNumber + '. Message: ' +result.message);
+                          $log.debug('Image build failed for line ' + line.lineNumber + '. Message: ' + result.message);
                           line.setError(result.message);
                         }
                       },
                       function() {
-                        $log.debug('Docker build failed.', arguments);
+                        $log.debug('Docker build request failed.', arguments);
                       });
                   }
                   return true;

@@ -25,12 +25,13 @@ app.service('docker', [
       return $http.post(DOCKER_HOST + '/build', new Uint8Array(output), {
         headers: { 'content-type': 'application/x-tar' },
         transformRequest: [],
-        transformResponse: function(data) {
-          if (data) {
+        transformResponse: function(data, headers) {
+          var result = null;
+          if (headers('content-type') === 'application/json') {
             var steps = angular.fromJson('[' + data.replace(/}\r\n{/g, '},{') + ']'),
                 status = steps[steps.length - 1],
-                result = { steps: steps },
                 match = null;
+            result = { steps: steps };
             if (status.error) {
               result.state = 'error';
               result.message = status.error;
@@ -42,8 +43,10 @@ app.service('docker', [
               result.message = status.stream;
             }
             return result;
+          } else {
+            result = { state: 'error', message: data };
           }
-          return null;
+          return result;
         }
       }).then(
         function(response) {
@@ -52,6 +55,7 @@ app.service('docker', [
         },
         function(response) {
           $log.debug('Build image failed.', response);
+          return response.data;
         });
     };
 
