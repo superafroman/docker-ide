@@ -34,8 +34,10 @@ angular.module('dockerIde')
 
               var lineNumber = change.from.line,
                   lastLine = instance.lastLine(),
-                  line,
-                  hasChanged = change.text.join('').length > 0 || change.removed.join('').length > 0;
+                  line = instance.getLineHandle(lineNumber),
+                  multiline = change.text.length > 1 || change.removed.length > 1,
+                  comment = /^#/.test(line.text),
+                  hasChanged = (!comment || multiline) && (change.text.join('').length > 0 || change.removed.join('').length > 0);
 
               if (hasChanged) {
                 for (; lineNumber <= lastLine; lineNumber++) {
