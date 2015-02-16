@@ -10,10 +10,20 @@ angular.module('dockerIde')
 
         templateUrl: 'scripts/editor/editor.html',
 
-        controller: ['$scope', '$log', '$interval', 'docker', 'Line',
-          function ($scope, $log, $interval, docker, Line) {
+        controller: ['$scope', '$log', '$interval', 'docker',
+          function ($scope, $log, $interval, docker) {
 
-            var lines = [];
+            var processChangesTimeoutId;
+
+            function scheduleProcessChanges(instance) {
+              $log.debug('Scheduling process changes');
+              if (!processChangesTimeoutId) {
+                $log.debug('Already scheduled');
+                processChangesTimeoutId = setTimeout(function () {
+                  processChanges(instance);
+                }, 500);
+              }
+            }
 
             function clearWidget(widget) {
               widget.clear();
@@ -22,73 +32,99 @@ angular.module('dockerIde')
             function handleChange(instance, change) {
               $log.debug('Handling codemirror change event.', change);
 
-              var lineNumber = change.to.line,
-                  lastLine = instance.lastLine();
+              var lineNumber = change.from.line,
+                  lastLine = instance.lastLine(),
+                  line,
+                  hasChanged = change.text.join('').length > 0 || change.removed.join('').length > 0;
 
-              if (change.text.join('').length === 0) {
-                $log.debug('No change, not re-building.');
-                return;
-              }
-
-              for (var i = lineNumber; i <= lastLine; i++) {
-
-                var widgets = instance.lineInfo(i).widgets;
-                if (widgets) {
-                  widgets.forEach(clearWidget);
+              if (hasChanged) {
+                for (; lineNumber <= lastLine; lineNumber++) {
+                  line = instance.getLineHandle(lineNumber);
+                  // Line is only dirty if it's not a comment and has content.
+                  line.__dirty = !(/^$|^#/.test(line.text));
+                  line.__lastChange = new Date();
+                  line.__error = null;
+                  if (line.widgets) {
+                    line.widgets.forEach(clearWidget);
+                  }
+                  instance.setGutterMarker(line, 'build-status', null);
                 }
-
-                lines[i] = new Line({
-                  text: instance.getLine(lineNumber),
-                  lineNumber: lineNumber,
-                  codeMirror: instance
-                });
+                scheduleProcessChanges(instance);
               }
             }
 
-            $interval(function() {
-              var parentImageId = null;
-              lines.some(function(line) {
-                if (line.isPending()) {
-                  $log.debug('Found pending line, waiting for completion. Line number:', line.lineNumber);
-                  return true;
-                }
-                if (line.isDirty()) {
-                  $log.debug('Found dirty line. Line number:', line.lineNumber);
-                  if (line.isSettled()) {
-                    $log.debug('Line settled, building image.');
+            function buildImage(instance, line, previousImageId) {
+              $log.debug('Building image.');
 
-                    var dockerfile = line.text;
+              var dockerfile = line.text;
 
-                    if (parentImageId) {
-                      dockerfile = 'FROM ' + parentImageId + '\n' + dockerfile;
+              if (previousImageId) {
+                dockerfile = 'FROM ' + previousImageId + '\n' + dockerfile;
+              }
+
+              line.__dirty = false;
+              instance.setGutterMarker(line, 'build-status', angular.element('<i class="fa fa-fw fa-spinner"></i>')[0]);
+
+              docker.build(dockerfile).then(
+                function(result) {
+                  if (result.state === 'success') {
+                    $log.debug('Image build successful');
+                    line.__imageId = result.imageId;
+                    instance.setGutterMarker(line, 'build-status', angular.element('<i class="fa fa-fw fa-plug"></i>')[0]);
+                    scheduleProcessChanges(instance);
+                  } else {
+                    $log.debug('Image build failed. Error:', result.message);
+                    if (line.__dirty) {
+                      // Line has been updated since triggering build.
+                      scheduleProcessChanges(instance);
+                    } else {
+                      line.__error = result.message;
+                      instance.addLineWidget(line, angular.element('<span class="cm-error">' + result.message + '</span>')[0]);
                     }
-
-                    line.setPending();
-
-                    docker.build(dockerfile).then(
-                      function(result) {
-                        if (result.state === 'success') {
-                          $log.debug('Image built for line ' + line.lineNumber);
-                          line.setImageId(result.imageId);
-                        } else {
-                          $log.debug('Image build failed for line ' + line.lineNumber + '. Message: ' + result.message);
-                          line.setError(result.message);
-                        }
-                      },
-                      function() {
-                        $log.debug('Docker build request failed.', arguments);
-                      });
                   }
-                  return true;
+                },
+                function() {
+                  $log.debug('Docker build request failed.', arguments);
+                  instance.setGutterMarker(line, 'build-status', null);
+                  line.__dirty = true;
+                  scheduleProcessChanges(instance);
+                });
+            }
+
+            function processChanges(instance) {
+              $log.debug('Processing line changes.');
+              processChangesTimeoutId = null;
+
+              var lineNumber = 0,
+                  lastLine = instance.lastLine(),
+                  line,
+                  previousImageId = null;
+
+              for (; lineNumber <= lastLine; lineNumber++) {
+                $log.debug('Processing line', lineNumber);
+                line = instance.getLineHandle(lineNumber);
+                if (line.__dirty) {
+                  $log.debug('Line is dirty');
+                  if (new Date() - line.__lastChange > 1000) {
+                    $log.debug('Line is stable.');
+                    buildImage(instance, line, previousImageId);
+                  } else {
+                    $log.debug('Line is not stable.');
+                    scheduleProcessChanges(instance);
+                  }
+                  break;
+                } else if (line.__error) {
+                  break;
                 }
-                if (line.imageId !== null) {
-                  parentImageId = line.imageId;
+
+                if (line.__imageId) {
+                  previousImageId = line.__imageId;
                 }
-              });
-            }, 500);
+              }
+            }
 
             $scope.options = {
-              lineNumbers: true,
+              lineNumbers: false,
               mode: 'dockerfile',
               theme: 'lesser-dark',
               gutters: [ 'build-status' ],
