@@ -16,8 +16,38 @@ app.service('docker', [
     function Docker() {
     }
 
+    Docker.prototype.connect = function(imageId) {
+      $log.debug('Sending connect request.');
+
+      return $http.post(DOCKER_HOST + '/containers/create', {
+        'AttachStdin': true,
+        'AttachStdout': true,
+        'AttachStderr': true,
+        'Tty': true,
+        'OpenStdin': true,
+        'StdinOnce': true,
+        'Cmd': [
+          '/bin/sh'
+        ],
+        'Entrypoint': '',
+        'Image': imageId
+      }, {
+        headers: {
+          'connection': 'upgrade',
+          'upgrade': 'tcp'
+        },
+        transformResponse: function(data) {
+          return data;
+        }
+      }).then(function() {
+        console.log(arguments);
+      }, function() {
+        console.log(arguments);
+      });
+    };
+
     Docker.prototype.build = function(dockerfile) {
-      $log.debug('Building image');
+      $log.debug('Sending build request.');
 
       var tar = new Tar(),
           output = tar.append('Dockerfile', dockerfile);

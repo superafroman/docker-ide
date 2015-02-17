@@ -132,6 +132,7 @@ angular.module('dockerIde')
               gutters: [ 'build-status' ],
               onLoad: function (instance) {
                 instance.on('change', handleChange);
+                docker.connect('ubuntu');
               }
             };
             $scope.dockerfile = '';
