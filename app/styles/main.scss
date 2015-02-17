@@ -2,11 +2,13 @@
 // endbower
 
 $primary-color: #f2aa47;
-$secondary-color: #588687;
+$secondary-color: #333;
 
 $body-font-family: "Open Sans", sans-serif;
 
 $global-radius: 2px;
+
+$icon-bar-item-padding: 1em;
 
 // foundation
 @import "foundation/scss/foundation";
@@ -16,56 +18,59 @@ a {
   cursor: pointer;
 }
 
-button, .button {
-  @include radius($button-radius);
-  &.postfix {
-    @include radius(0 $button-radius $button-radius 0);
-  }
-}
-
-fieldset {
-  border: none;
-  padding: 0;
-  margin: 0;
-}
-
-h1 {
-  margin-top: 20px;
-}
-
-p {
-  font-size: 1.2rem;
-  font-weight: 300;
-}
-
-select[multiple] {
-  background-image: none;
-  height: 7em;
-}
-
 [ng\:cloak], [ng-cloak], [data-ng-cloak], [x-ng-cloak], .ng-cloak, .x-ng-cloak {
   display: none !important;
-}
-
-.label {
-  @include radius($global-radius);
 }
 
 .build-status {
   width: 21px;
 }
 
-footer {
-  margin-top: 1em;
-  text-align: center;
+.icon-bar {
+  position: absolute;
+  top: 0;
+  right: 0;
+
   .logo {
-    background: url(//www.superafroman.com/content/images/2014/10/superafroman-cropped.png);
-    display: inline-block;
-    width: 50px;
-    height: 50px;
-    border-radius: 50%;
-    background-size: cover !important;
-    background-position: center center !important;
+    $logo-background-color: darken($secondary-color, 3%);
+    position: fixed;
+    bottom: 0;
+    background-color: $logo-background-color;
+    &:hover {
+      background-color: $logo-background-color;
+    }
+    > img {
+      border-radius: 50%;
+      width: 39px;
+      height: 39px;
+    }
+  }
+}
+
+.terminal {
+  border: #000 solid 5px;
+  font-family: "DejaVu Sans Mono", "Liberation Mono", monospace;
+  font-size: 11px;
+  color: #f0f0f0;
+  background: #000;
+
+  .terminal-cursor {
+    color: #000;
+    background: #f0f0f0;
+  }
+}
+
+.cm-s-lesser-dark {
+  $editor-background-color: darken($secondary-color, 10%);
+  &.CodeMirror {
+    background: $editor-background-color;
+    color: #EBEFE7;
+    text-shadow: 0 -1px 1px #262626;
+    height: calc(100vh);
+  }
+  .CodeMirror-gutters {
+    background: $secondary-color;
+    border-right: 1px solid darken($secondary-color, 3%);
   }
 }
 

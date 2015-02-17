@@ -10,16 +10,14 @@ app.directive('terminal', [
 
       var socket,
           terminal = new Terminal({
-            debug: true
+            cols: 80,
+            rows: 24
           });
 
       terminal.open(element.get(0));
 
       terminal.on('data', function(data) {
         if (socket) {
-//          if (data === '\r') {
-//            data = '\n\r';
-//          }
           socket.send(data);
         }
       });
@@ -56,6 +54,7 @@ app.directive('terminal', [
 
     return {
       restrict: 'E',
+      replace: true,
       scope: {
         imageId: '='
       },

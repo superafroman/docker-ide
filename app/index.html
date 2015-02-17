@@ -20,24 +20,7 @@
         <!-- endbuild -->
     </head>
     <body ng-app="dockerIde" ng-cloak>
-        <div class="off-canvas-wrap">
-            <main class="inner-wrap">
-                <section role="main">
-                    <div class="row">
-                        <div class="column" ui-view>
-                        </div>
-                    </div>
-                </section>
-                <a class="exit-off-canvas"></a>
-            </main>
-            <footer>
-                <div class="row">
-                    <div class="column">
-                        <a class="logo" href="https://www.superafroman.com"></a>
-                    </div>
-                </div>
-            </footer>
-        </div>
+        <main ui-view></main>
 
         <!-- build:js(.) scripts/oldieshim.js -->
         <!--[if lt IE 9]>

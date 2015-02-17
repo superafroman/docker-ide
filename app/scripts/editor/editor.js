@@ -126,7 +126,7 @@ angular.module('dockerIde')
             }
 
             $scope.options = {
-              lineNumbers: false,
+              lineNumbers: true,
               mode: 'dockerfile',
               theme: 'lesser-dark',
               gutters: [ 'build-status' ],
