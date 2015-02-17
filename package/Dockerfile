@@ -6,13 +6,11 @@
 
 FROM nginx
 
-ENV app_destination /var/www/commuter-admin/
-
 # Copy angular app to image
-ADD dist/ $app_destination
+ADD dist/ /var/www/docker-ide/
 
 # Configure nginx
 RUN rm -f /etc/nginx/conf.d/*
-ADD deployment/commuter-admin.conf /etc/nginx/conf.d/
+ADD deployment/docker-ide.conf /etc/nginx/conf.d/
 ADD deployment/nginx.conf /etc/nginx/
 

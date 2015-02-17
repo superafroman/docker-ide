@@ -28,7 +28,13 @@
   },
   "overrides": {
     "codemirror": {
-      "main": ["lib/codemirror.js", "lib/codemirror.css", "addon/mode/simple.js", "mode/dockerfile/dockerfile.js", "theme/lesser-dark.css"]
+      "main": [
+        "lib/codemirror.js",
+        "lib/codemirror.css",
+        "addon/mode/simple.js",
+        "mode/dockerfile/dockerfile.js",
+        "theme/lesser-dark.css"
+      ]
     }
   },
   "appPath": "app"

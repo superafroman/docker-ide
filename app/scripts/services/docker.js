@@ -2,7 +2,7 @@
 
 var app = angular.module('dockerIde');
 
-var DOCKER_HOST = 'http://192.168.59.103:2375';
+var DOCKER_HOST = '192.168.59.103:2375';
 
 var Tar;
 /* jshint ignore:start */
@@ -10,8 +10,8 @@ Tar = require('tar-js');
 /* jshint ignore:end */
 
 app.service('docker', [
-  '$http', '$log',
-  function ($http, $log) {
+  '$http', '$log', '$q',
+  function ($http, $log, $q) {
 
     function Docker() {
     }
@@ -19,7 +19,9 @@ app.service('docker', [
     Docker.prototype.connect = function(imageId) {
       $log.debug('Sending connect request.');
 
-      return $http.post(DOCKER_HOST + '/containers/create', {
+      var deferred = $q.defer();
+
+      $http.post('http://' + DOCKER_HOST + '/containers/create', {
         'AttachStdin': true,
         'AttachStdout': true,
         'AttachStderr': true,
@@ -29,21 +31,22 @@ app.service('docker', [
         'Cmd': [
           '/bin/sh'
         ],
-        'Entrypoint': '',
         'Image': imageId
-      }, {
-        headers: {
-          'connection': 'upgrade',
-          'upgrade': 'tcp'
-        },
-        transformResponse: function(data) {
-          return data;
-        }
-      }).then(function() {
-        console.log(arguments);
-      }, function() {
-        console.log(arguments);
+      }).then(function(response) {
+        var id = response.data.Id;
+        var socket = new WebSocket('ws://' + DOCKER_HOST + '/containers/' + id + '/attach/ws?logs=1&stderr=1&stdout=1&stream=1&stdin=1');
+
+        $http.post('http://' + DOCKER_HOST + '/containers/' + id + '/start').then(
+          function() {
+            deferred.resolve(socket);
+          },
+          function() {
+            deferred.reject('Error starting container.');
+          });
+      }, function(response) {
+        deferred.reject(response.data || 'Error creating container.');
       });
+      return deferred.promise;
     };
 
     Docker.prototype.build = function(dockerfile) {
@@ -52,7 +55,7 @@ app.service('docker', [
       var tar = new Tar(),
           output = tar.append('Dockerfile', dockerfile);
 
-      return $http.post(DOCKER_HOST + '/build', new Uint8Array(output), {
+      return $http.post('http://' + DOCKER_HOST + '/build', new Uint8Array(output), {
         headers: { 'content-type': 'application/x-tar' },
         transformRequest: [],
         transformResponse: function(data, headers) {

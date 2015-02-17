@@ -3,8 +3,8 @@
     <head>
         <base href="/">
         <meta charset="utf-8">
-        <title>Docker IDE</title>
-        <meta name="description" content="A simple Docker IDE that auto builds your images and allows terminal access to each step ">
+        <title>DockerIDE</title>
+        <meta name="description" content="A simple Docker editor that auto builds your images and allows terminal access to each step.">
         <meta name="viewport" content="width=device-width">
 
         <link rel="stylesheet" href="//fonts.googleapis.com/css?family=Open Sans:400,700" />
@@ -19,7 +19,7 @@
         <link rel="stylesheet" href="styles/main.css">
         <!-- endbuild -->
     </head>
-    <body ng-app="dockerIde" ng-controller="ApplicationCtrl" ng-cloak>
+    <body ng-app="dockerIde" ng-cloak>
         <div class="off-canvas-wrap">
             <main class="inner-wrap">
                 <section role="main">
@@ -33,20 +33,11 @@
             <footer>
                 <div class="row">
                     <div class="column">
-                        <span>Built by <a href="superafroman.com">Superafroman</a>.</span>
+                        <a class="logo" href="https://www.superafroman.com"></a>
                     </div>
                 </div>
             </footer>
         </div>
-
-        <alert class="row" ng-repeat="alert in alerts" type="alert.type" close="closeAlert($index)">
-            <div class="small-10 column">
-                {{ alert.message }}
-            </div>
-            <div class="small-2 column" ng-if="alert.count">
-                <span class="label">{{ alert.count }}</span>
-            </div>
-        </alert>
 
         <!-- build:js(.) scripts/oldieshim.js -->
         <!--[if lt IE 9]>
@@ -81,15 +72,16 @@
         <!-- endbuild -->
 
         <!-- build:js({.tmp,app}) scripts/scripts.js -->
-        <script src="scripts/tar.js"></script>
+        <script src="scripts/vendor/tar.js"></script>
+        <script src="scripts/vendor/term.js"></script>
 
         <script src="scripts/app.js"></script>
         <script src="scripts/utils.js"></script>
-        <script src="scripts/application.js"></script>
 
         <script src="scripts/services/docker.js"></script>
 
         <script src="scripts/editor/editor.js"></script>
+        <script src="scripts/terminal/terminal.js"></script>
         <!-- endbuild -->
     </body>
 </html>
