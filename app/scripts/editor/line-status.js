@@ -13,7 +13,7 @@ LineStatusService.prototype.update = function(codeMirror, line) {
 
   switch (line.__state) {
     case 'loading':
-      codeMirror.setGutterMarker(line, GUTTER_NAME, createMarker('fa-spinner fa-spin'));
+      codeMirror.setGutterMarker(line, GUTTER_NAME, createMarker('fa-refresh fa-spin'));
       break;
     case 'built':
       codeMirror.setGutterMarker(line, GUTTER_NAME, createMarker('fa-plug'));

@@ -10,12 +10,13 @@ angular.module('dockerIde')
 
         templateUrl: 'scripts/editor/editor.html',
 
-        controller: ['$scope', '$log', '$timeout', 'docker', 'lineStatusService', 'BuildManager',
-          function ($scope, $log, $timeout, docker, lineStatusService, BuildManager) {
+        controller: ['$scope', '$state', '$log', '$timeout', 'docker', 'lineStatusService', 'BuildManager',
+          function ($scope, $state, $log, $timeout, docker, lineStatusService, BuildManager) {
 
             var codeMirror,
                 buildManager;
 
+            $scope.dockerfile = '';
             $scope.terminals = [];
 
             function handleGutterClick(lineNumber) {
@@ -80,7 +81,14 @@ angular.module('dockerIde')
                 buildManager = new BuildManager(codeMirror);
               }
             };
-            $scope.dockerfile = '';
+
+            $scope.toggleState = function(stateName) {
+              if ($state.includes(stateName)) {
+                $state.go('editor');
+              } else {
+                $state.go(stateName);
+              }
+            };
           }]
       });
     }]);

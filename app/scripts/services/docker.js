@@ -2,50 +2,58 @@
 
 var app = angular.module('dockerIde');
 
-var DOCKER_HOST = '192.168.59.103:2375';
+// var DOCKER_HOST = '192.168.59.103:2375';
 
 var Tar;
 /* jshint ignore:start */
 Tar = require('tar-js');
 /* jshint ignore:end */
 
-app.service('docker', [
-  '$http', '$log', '$q',
-  function ($http, $log, $q) {
+app.factory('docker', [
+  '$http', '$log', '$q', 'localStorageService',
+  function ($http, $log, $q, localStorageService) {
 
     function Docker() {
     }
 
+    Docker.prototype.ping = function() {
+      var host = localStorageService.get('dockerHost');
+      return $http.get(host + '/_ping', { timeout: 2000 });
+    };
+
     Docker.prototype.connect = function(imageId) {
       $log.debug('Sending connect request.');
 
-      var deferred = $q.defer();
+      var deferred = $q.defer(),
+          host = localStorageService.get('dockerHost');
 
-      $http.post('http://' + DOCKER_HOST + '/containers/create', {
+      $http.post(host + '/containers/create', {
         'AttachStdin': true,
         'AttachStdout': true,
         'AttachStderr': true,
         'Tty': true,
         'OpenStdin': true,
         'StdinOnce': true,
-        'Cmd': [
-          '/bin/sh'
-        ],
+        'EntryPoint': [ '/bin/sh' ],
+        'Cmd': [ '' ],
         'Image': imageId
-      }).then(function(response) {
-        var id = response.data.Id;
-        var socket = new WebSocket('ws://' + DOCKER_HOST + '/containers/' + id + '/attach/ws?logs=1&stderr=1&stdout=1&stream=1&stdin=1');
+      }).then(
+        function(response) {
+          var id = response.data.Id,
+              socket = new WebSocket(host.replace(/^http/, 'ws') + '/containers/' + id +
+                '/attach/ws?logs=1&stderr=1&stdout=1&stream=1&stdin=1');
 
-        $http.post('http://' + DOCKER_HOST + '/containers/' + id + '/start').then(
-          function() {
-            deferred.resolve(socket);
-          },
-          function() {
-            deferred.reject('Error starting container.');
-          });
-      }, function(response) {
-        deferred.reject(response.data || 'Error creating container.');
-      });
+          $http.post(host + '/containers/' + id + '/start').then(
+            function() {
+              deferred.resolve(socket);
+            },
+            function() {
+              deferred.reject('Error starting container.');
+            });
+        },
+        function(response) {
+          deferred.reject(response.data || 'Error creating container.');
+        });
       return deferred.promise;
     };
 
@@ -53,11 +61,12 @@ app.service('docker', [
       $log.debug('Sending build request.');
 
       var tar = new Tar(),
-          output = tar.append('Dockerfile', dockerfile);
+          output = tar.append('Dockerfile', dockerfile),
+          host = localStorageService.get('dockerHost');
 
       var deferred = $q.defer();
 
-      $http.post('http://' + DOCKER_HOST + '/build', new Uint8Array(output), {
+      $http.post(host + '/build', new Uint8Array(output), {
         headers: { 'content-type': 'application/x-tar' },
         transformRequest: [],
         transformResponse: function(data, headers) {

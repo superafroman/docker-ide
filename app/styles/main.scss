@@ -1,8 +1,8 @@
 // bower:scss
 // endbower
 
-$primary-color: #f2aa47;
 $secondary-color: #333;
+$primary-color: darken($secondary-color, 3%);
 
 $body-font-family: "Open Sans", sans-serif;
 
@@ -10,7 +10,7 @@ $global-radius: 2px;
 
 $icon-bar-item-padding: 1em;
 
-$tabs-navigation-bg-color: darken($secondary-color, 3%);
+$tabs-navigation-bg-color: $primary-color;
 $tabs-navigation-active-bg-color: #000;
 $tabs-navigation-font-color: #f0f0f0;
 $tabs-navigation-padding: 0.5em;
@@ -32,24 +32,38 @@ a {
   width: 21px;
 }
 
-.icon-bar {
+.side-bar {
+  $side-bar-content-background-color: $primary-color;
+
   position: absolute;
   top: 0;
   right: 0;
+  border-left: 1px solid $side-bar-content-background-color;
+  height: 100%;
+  background-color: $side-bar-content-background-color;
+
+  .item {
+    &.active {
+      background-color: $primary-color;
+    }
+  }
 
   .logo {
-    $logo-background-color: darken($secondary-color, 3%);
     position: fixed;
     bottom: 0;
-    background-color: $logo-background-color;
+    background-color: $side-bar-content-background-color;
     &:hover {
-      background-color: $logo-background-color;
+      background-color: $side-bar-content-background-color;
     }
     > img {
       border-radius: 50%;
       width: 39px;
       height: 39px;
     }
+  }
+
+  .side-bar-content {
+    display: inline-block;
   }
 }
 

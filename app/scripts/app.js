@@ -10,7 +10,8 @@ angular
     'ngTouch',
     'ui.router',
     'ui.codemirror',
-    'mm.foundation'
+    'mm.foundation',
+    'LocalStorageModule'
   ])
   .run(['$rootScope', '$http', '$window', '$state',
     function($rootScope, $http, $window, $state) {

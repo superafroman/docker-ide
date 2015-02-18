@@ -20,7 +20,8 @@
         <!-- endbuild -->
     </head>
     <body ng-app="dockerIde" ng-cloak>
-        <main ui-view></main>
+        <main ui-view>
+        </main>
 
         <!-- build:js(.) scripts/oldieshim.js -->
         <!--[if lt IE 9]>
@@ -51,6 +52,7 @@
         <script src="bower_components/codemirror/addon/mode/simple.js"></script>
         <script src="bower_components/codemirror/mode/dockerfile/dockerfile.js"></script>
         <script src="bower_components/angular-ui-codemirror/ui-codemirror.js"></script>
+        <script src="bower_components/angular-local-storage/dist/angular-local-storage.js"></script>
         <!-- endbower -->
         <!-- endbuild -->
 
@@ -66,6 +68,8 @@
         <script src="scripts/editor/editor.js"></script>
         <script src="scripts/editor/build-manager.js"></script>
         <script src="scripts/editor/line-status.js"></script>
+        <script src="scripts/editor/settings/settings.js"></script>
+
         <script src="scripts/terminal/terminal.js"></script>
         <!-- endbuild -->
     </body>

@@ -1,0 +1,11 @@
+
+<form role="form" name="form" novalidate>
+    <div class="row">
+        <div class="large-12 column" ng-class="{ error: form.host.$dirty && form.host.$error.required }">
+            <label>Name:
+                <input type="text" name="host" ng-model="dockerHost" required>
+            </label>
+            <small class="error" ng-show="form.host.$dirty && form.host.$error.required">Name is required.</small>
+        </div>
+    </div>
+</form>
