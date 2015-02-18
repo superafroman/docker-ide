@@ -25,7 +25,7 @@ angular.module('dockerIde').factory('BuildManager', [
         lastLine = codeMirror.lastLine(),
         line = codeMirror.getLineHandle(lineNumber),
         multiline = change.text.length > 1 || change.removed.length > 1,
-        comment = /^#/.test(line.text),
+        comment = /^#/.test(line.text) && (change.from.ch > 0 || change.text[0] !== '#'),
         // TODO: handle line that's just been commented out
         hasChanged = (!comment || multiline) && (change.text.join('').length > 0 || change.removed.join('').length > 0);
 
@@ -39,6 +39,8 @@ angular.module('dockerIde').factory('BuildManager', [
           // Line is only dirty if it's not a comment and has content.
           if (!(/^$|^#/.test(line.text))) {
             line.__state = 'dirty';
+          } else {
+            line.__imageId = null;
           }
           line.__lastChange = new Date();
           line.__error = null;
