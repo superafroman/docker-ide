@@ -13,4 +13,5 @@
     </a>
 </div>
 
-<terminal image-id="terminalImageId" ng-show="!!terminalImageId" on-close="closeTerminal()"></terminal>
+<terminal image-id="activeLine.__imageId" ng-show="!!activeLine" on-open="terminalOpened()" on-close="terminalClosed()">
+</terminal>

@@ -16,7 +16,7 @@ angular.module('dockerIde')
             var processChangesTimeoutId,
                 codeMirror;
 
-            $scope.terminalImageId = null;
+            $scope.activeLine = null;
 
             function scheduleProcessChanges() {
               $log.debug('Scheduling process changes');
@@ -136,22 +136,17 @@ angular.module('dockerIde')
               var line = codeMirror.getLineHandle(lineNumber);
               if (line.__imageId) {
                 codeMirror.setGutterMarker(line, 'build-status', angular.element('<i class="fa fa-fw fa-spinner fa-spin"></i>')[0]);
-                $scope.terminalImageId = line.__imageId;
+                $scope.activeLine = line;
               }
             }
 
+            $scope.terminalOpened = function() {
+              codeMirror.setGutterMarker($scope.activeLine, 'build-status', angular.element('<i class="fa fa-fw fa-code"></i>')[0]);
+            };
+
             $scope.terminalClosed = function() {
-              var i = 0,
-                  lastLine = codeMirror.lastLine(),
-                  line;
-              for (; i <= lastLine; i++) {
-                line = codeMirror.getLineHandle(i);
-                if (line.__imageId === $scope.terminalImageId) {
-                  codeMirror.setGutterMarker(line, 'build-status', angular.element('<i class="fa fa-fw fa-plug"></i>')[0]);
-                  break;
-                }
-              }
-              $scope.terminalImageId = null;
+              codeMirror.setGutterMarker($scope.activeLine, 'build-status', angular.element('<i class="fa fa-fw fa-plug"></i>')[0]);
+              $scope.activeLine = null;
             };
 
             $scope.options = {

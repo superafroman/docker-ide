@@ -47,16 +47,28 @@ a {
   }
 }
 
-.terminal {
-  border: #000 solid 5px;
-  font-family: "DejaVu Sans Mono", "Liberation Mono", monospace;
-  font-size: 11px;
-  color: #f0f0f0;
-  background: #000;
+.docker-terminal {
+  position: absolute;
+  bottom: 0px;
+  z-index: 100;
+  width: 100%;
+  transition: bottom linear 0.5s;
 
-  .terminal-cursor {
-    color: #000;
-    background: #f0f0f0;
+  &.ng-hide {
+    bottom: -400px;
+  }
+
+  .terminal {
+    border: #000 solid 5px;
+    font-family: "DejaVu Sans Mono", "Liberation Mono", monospace;
+    font-size: 11px;
+    color: #f0f0f0;
+    background: #000;
+
+    .terminal-cursor {
+      color: #000;
+      background: #f0f0f0;
+    }
   }
 }
 

@@ -22,6 +22,13 @@ app.directive('terminal', [
         }
       });
 
+      scope.$on('socket:open', function() {
+        if (scope.open) {
+          scope.open();
+        }
+        terminal.focus();
+      });
+
       scope.$on('socket:data', function(event, data) {
         terminal.write(data);
       });
@@ -49,14 +56,25 @@ app.directive('terminal', [
           docker.connect(imageId).then(
             function(newSocket) {
               socket = newSocket;
+              socket.onopen = function() {
+                scope.$apply(function() {
+                  scope.$broadcast('socket:open');
+                });
+              };
               socket.onclose = function() {
-                scope.$broadcast('socket:close');
+                scope.$apply(function() {
+                  scope.$broadcast('socket:close');
+                });
               };
               socket.onmessage = function(event) {
-                scope.$broadcast('socket:data', event.data);
+                scope.$apply(function() {
+                  scope.$broadcast('socket:data', event.data);
+                });
               };
               socket.onerror = function(event) {
-                scope.$broadcast('socket:error', event);
+                scope.$apply(function() {
+                  scope.$broadcast('socket:error', event);
+                });
               };
             },
             function(message) {
@@ -71,6 +89,7 @@ app.directive('terminal', [
       replace: true,
       scope: {
         imageId: '=',
+        open: '&onOpen',
         close: '&onClose'
       },
       templateUrl: 'scripts/terminal/terminal.html',
