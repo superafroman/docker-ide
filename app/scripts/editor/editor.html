@@ -13,5 +13,8 @@
     </a>
 </div>
 
-<terminal image-id="activeLine.__imageId" ng-show="!!activeLine" on-open="terminalOpened()" on-close="terminalClosed()">
-</terminal>
+<tabset class="terminal-tabs" ng-show="terminals.length">
+    <tab ng-repeat="terminal in terminals" heading="{{ terminal.title }}" active="terminal.active">
+        <terminal image-id="terminal.imageId" on-open="terminalOpened($index)" on-close="terminalClosed($index)"></terminal>
+    </tab>
+</tabset>

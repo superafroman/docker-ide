@@ -45,15 +45,15 @@ app.directive('terminal', [
         terminal.reset();
       });
 
-      scope.$watch('imageId', function(imageId) {
-
-        if (socket) {
-          socket.close();
-          socket = null;
-        }
-
-        if (imageId) {
-          docker.connect(imageId).then(
+//      scope.$watch('imageId', function(imageId) {
+//
+//        if (socket) {
+//          socket.close();
+//          socket = null;
+//        }
+//
+//        if (imageId) {
+          docker.connect(scope.imageId).then(
             function(newSocket) {
               socket = newSocket;
               socket.onopen = function() {
@@ -80,8 +80,8 @@ app.directive('terminal', [
             function(message) {
               $log.debug('Error creating container.', message);
             });
-        }
-      });
+//        }
+//      });
     }
 
     return {

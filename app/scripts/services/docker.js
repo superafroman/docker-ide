@@ -55,7 +55,9 @@ app.service('docker', [
       var tar = new Tar(),
           output = tar.append('Dockerfile', dockerfile);
 
-      return $http.post('http://' + DOCKER_HOST + '/build', new Uint8Array(output), {
+      var deferred = $q.defer();
+
+      $http.post('http://' + DOCKER_HOST + '/build', new Uint8Array(output), {
         headers: { 'content-type': 'application/x-tar' },
         transformRequest: [],
         transformResponse: function(data, headers) {
@@ -84,12 +86,13 @@ app.service('docker', [
       }).then(
         function(response) {
           $log.debug('Build image successful.', response);
-          return response.data;
+          deferred.resolve(response.data);
         },
         function(response) {
           $log.debug('Build image failed.', response);
-          return response.data;
+          deferred.reject(response.data);
         });
+      return deferred.promise;
     };
 
     return new Docker();
