@@ -6,7 +6,7 @@ app.directive('terminal', [
   '$log', 'docker',
   function($log, docker) {
 
-    function link(scope, element, attrs) {
+    function link(scope, element) {
 
       var socket,
           terminal = new Terminal({
@@ -22,23 +22,6 @@ app.directive('terminal', [
         }
       });
 
-      docker.connect(attrs.imageId).then(
-        function(newSocket) {
-          socket = newSocket;
-          socket.onclose = function() {
-            scope.$broadcast('socket:close');
-          };
-          socket.onmessage = function(event) {
-            scope.$broadcast('socket:data', event.data);
-          };
-          socket.onerror = function(event) {
-            scope.$broadcast('socket:error', event);
-          };
-        },
-        function(message) {
-          $log.debug('Error creating container.', message);
-        });
-
       scope.$on('socket:data', function(event, data) {
         terminal.write(data);
       });
@@ -48,7 +31,38 @@ app.directive('terminal', [
       });
 
       scope.$on('socket:close', function() {
-        terminal.destroy();
+        if (scope.close) {
+          scope.close();
+        }
+        socket = null;
+        terminal.reset();
+      });
+
+      scope.$watch('imageId', function(imageId) {
+
+        if (socket) {
+          socket.close();
+          socket = null;
+        }
+
+        if (imageId) {
+          docker.connect(imageId).then(
+            function(newSocket) {
+              socket = newSocket;
+              socket.onclose = function() {
+                scope.$broadcast('socket:close');
+              };
+              socket.onmessage = function(event) {
+                scope.$broadcast('socket:data', event.data);
+              };
+              socket.onerror = function(event) {
+                scope.$broadcast('socket:error', event);
+              };
+            },
+            function(message) {
+              $log.debug('Error creating container.', message);
+            });
+        }
       });
     }
 
@@ -56,7 +70,8 @@ app.directive('terminal', [
       restrict: 'E',
       replace: true,
       scope: {
-        imageId: '='
+        imageId: '=',
+        close: '&onClose'
       },
       templateUrl: 'scripts/terminal/terminal.html',
       link: link
