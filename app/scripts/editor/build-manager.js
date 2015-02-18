@@ -10,9 +10,18 @@ angular.module('dockerIde').factory('BuildManager', [
       this.processChangesTimeoutId = null;
     }
 
+    function displayError(codeMirror, line, message) {
+      codeMirror.addLineWidget(line, angular.element('<span class="cm-error">' + message + '</span>')[0]);
+    }
+
+    function includesNextLine(line) {
+      var text = line.text.trim();
+      return text.charAt(text.length - 1) === '\\';
+    }
+
     BuildManager.prototype.scheduleProcessChanges = function() {
-      $log.debug('Scheduling process changes');
       if (!this.processChangesTimeoutId) {
+        $log.debug('Scheduling process changes');
         this.processChangesTimeoutId = $timeout(angular.bind(this, this.processChanges), 500);
       }
     };
@@ -25,8 +34,8 @@ angular.module('dockerIde').factory('BuildManager', [
         lastLine = codeMirror.lastLine(),
         line = codeMirror.getLineHandle(lineNumber),
         multiline = change.text.length > 1 || change.removed.length > 1,
+        // don't count the line as a comment if it's just been commented out
         comment = /^#/.test(line.text) && (change.from.ch > 0 || change.text[0] !== '#'),
-        // TODO: handle line that's just been commented out
         hasChanged = (!comment || multiline) && (change.text.join('').length > 0 || change.removed.join('').length > 0);
 
       function clearWidget(widget) {
@@ -34,11 +43,22 @@ angular.module('dockerIde').factory('BuildManager', [
       }
 
       if (hasChanged) {
+        // handle line continuation (lines ending '\') by backtracking to first line in series
+        for (; lineNumber > 0; lineNumber--) {
+          line = codeMirror.getLineHandle(lineNumber - 1);
+          if (!includesNextLine(line)) {
+            break;
+          }
+        }
+
+        var continuing = false;
         for (; lineNumber <= lastLine; lineNumber++) {
           line = codeMirror.getLineHandle(lineNumber);
           // Line is only dirty if it's not a comment and has content.
-          if (!(/^$|^#/.test(line.text))) {
+          if (!(/^$|^#/.test(line.text.trim()))) {
             line.__state = 'dirty';
+          } else if (continuing) {
+            displayError(codeMirror, line, 'Comment within line continuation');
           } else {
             line.__imageId = null;
           }
@@ -48,48 +68,62 @@ angular.module('dockerIde').factory('BuildManager', [
             line.widgets.forEach(clearWidget);
           }
           lineStatusService.update(codeMirror, line);
+          continuing = includesNextLine(line);
         }
-        this.scheduleProcessChanges();
+        // if still continuing then either there's an error or the current command isn't finished, so don't bother
+        // processing.
+        if (!continuing) {
+          this.scheduleProcessChanges();
+        }
       }
     };
 
-    BuildManager.prototype.buildImage = function(line, previousImageId) {
+    BuildManager.prototype.buildImage = function(lines, previousImageId) {
       $log.debug('Building image.');
 
       var buildManager = this,
           codeMirror = this.codeMirror,
-          dockerfile = line.text;
+          line = lines[0],
+          dockerfile = '';
 
-      if (previousImageId) {
-        dockerfile = 'FROM ' + previousImageId + '\n' + dockerfile;
+      function setState(lines, state) {
+        lines.forEach(function(l) {l.__state = state; });
       }
 
-      line.__state = 'loading';
+      setState(lines, 'loading');
       lineStatusService.update(codeMirror, line);
+
+      if (previousImageId) {
+        dockerfile = 'FROM ' + previousImageId + '\n';
+      }
+
+      lines.forEach(function(l) {
+        dockerfile += l.text + '\n';
+      });
 
       docker.build(dockerfile).then(
         function(result) {
           if (result.state === 'success') {
             $log.debug('Image build successful');
-            line.__state = 'built';
+            setState(lines, 'built');
             line.__imageId = result.imageId;
             buildManager.scheduleProcessChanges();
           } else {
             $log.debug('Image build failed. Error:', result.message);
-            if (line.__state === 'dirty') {
-              // Line has been updated since triggering build.
+            if (lines.some(function(l) { return l.__state === 'dirty'; })) {
+              // At least one line has been updated since triggering build.
+              setState(lines, 'dirty');
               buildManager.scheduleProcessChanges();
             } else {
-              line.__state = 'error';
-              line.__error = result.message;
-              codeMirror.addLineWidget(line, angular.element('<span class="cm-error">' + result.message + '</span>')[0]);
+              setState(lines, 'error');
+              displayError(codeMirror, lines[lines.length - 1], result.message);
             }
           }
           lineStatusService.update(codeMirror, line);
         },
         function(message) {
           $log.debug('Docker build request failed, will retry.', message);
-          line.__state = 'dirty';
+          setState(lines, 'dirty');
           buildManager.scheduleProcessChanges();
         });
     };
@@ -102,6 +136,7 @@ angular.module('dockerIde').factory('BuildManager', [
           lineNumber = 0,
           lastLine = codeMirror.lastLine(),
           line,
+          lines = [],
           previousImageId = null;
 
       for (; lineNumber <= lastLine; lineNumber++) {
@@ -111,7 +146,11 @@ angular.module('dockerIde').factory('BuildManager', [
           $log.debug('Line is dirty');
           if (new Date() - line.__lastChange > 1000) {
             $log.debug('Line is stable.');
-            this.buildImage(line, previousImageId);
+            lines.push(line);
+            if (includesNextLine(line)) {
+              continue;
+            }
+            this.buildImage(lines, previousImageId);
           } else {
             $log.debug('Line is not stable.');
             this.scheduleProcessChanges();
