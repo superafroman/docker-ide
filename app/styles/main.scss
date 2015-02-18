@@ -10,6 +10,12 @@ $global-radius: 2px;
 
 $icon-bar-item-padding: 1em;
 
+$tabs-navigation-bg-color: darken($secondary-color, 3%);
+$tabs-navigation-active-bg-color: #000;
+$tabs-navigation-font-color: #f0f0f0;
+$tabs-navigation-padding: 0.5em;
+$tabs-navigation-font-size: 0.8em;
+
 // foundation
 @import "foundation/scss/foundation";
 // end foundation
@@ -22,7 +28,7 @@ a {
   display: none !important;
 }
 
-.build-status {
+.line-status {
   width: 21px;
 }
 
@@ -58,12 +64,36 @@ a {
     bottom: -400px;
   }
 
+  .tabs {
+    background-color: $tabs-navigation-bg-color;
+    .close {
+      color: lighten($tabs-navigation-bg-color, 20%);
+      padding-right: 0.5em;
+      i {
+        transition: transform cubic-bezier(.46,-0.49,.33,1.35) .5s;
+      }
+      &:hover {
+        i {
+          transform: rotate(90deg);
+        }
+      }
+    }
+  }
+
+  .tabs-content {
+    margin: 0;
+    .content {
+      padding: 0;
+    }
+  }
+
   .terminal {
-    border: #000 solid 5px;
+    padding: 0.5em;
+    background-color: rgba(0, 0, 0, 0.6);
+    border-top: #000 solid 5px;
     font-family: "DejaVu Sans Mono", "Liberation Mono", monospace;
     font-size: 11px;
     color: #f0f0f0;
-    background: #000;
 
     .terminal-cursor {
       color: #000;

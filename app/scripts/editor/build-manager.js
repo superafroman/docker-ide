@@ -37,7 +37,9 @@ angular.module('dockerIde').factory('BuildManager', [
         for (; lineNumber <= lastLine; lineNumber++) {
           line = codeMirror.getLineHandle(lineNumber);
           // Line is only dirty if it's not a comment and has content.
-          line.__dirty = !(/^$|^#/.test(line.text));
+          if (!(/^$|^#/.test(line.text))) {
+            line.__state = 'dirty';
+          }
           line.__lastChange = new Date();
           line.__error = null;
           if (line.widgets) {
@@ -60,21 +62,23 @@ angular.module('dockerIde').factory('BuildManager', [
         dockerfile = 'FROM ' + previousImageId + '\n' + dockerfile;
       }
 
-      line.__dirty = false;
+      line.__state = 'loading';
       lineStatusService.update(codeMirror, line);
 
       docker.build(dockerfile).then(
         function(result) {
           if (result.state === 'success') {
             $log.debug('Image build successful');
+            line.__state = 'built';
             line.__imageId = result.imageId;
             buildManager.scheduleProcessChanges();
           } else {
             $log.debug('Image build failed. Error:', result.message);
-            if (line.__dirty) {
+            if (line.__state === 'dirty') {
               // Line has been updated since triggering build.
               buildManager.scheduleProcessChanges();
             } else {
+              line.__state = 'error';
               line.__error = result.message;
               codeMirror.addLineWidget(line, angular.element('<span class="cm-error">' + result.message + '</span>')[0]);
             }
@@ -82,8 +86,8 @@ angular.module('dockerIde').factory('BuildManager', [
           lineStatusService.update(codeMirror, line);
         },
         function(message) {
-          $log.debug('Docker build request failed.', message);
-          line.__dirty = true;
+          $log.debug('Docker build request failed, will retry.', message);
+          line.__state = 'dirty';
           buildManager.scheduleProcessChanges();
         });
     };
@@ -101,7 +105,7 @@ angular.module('dockerIde').factory('BuildManager', [
       for (; lineNumber <= lastLine; lineNumber++) {
         $log.debug('Processing line', lineNumber);
         line = codeMirror.getLineHandle(lineNumber);
-        if (line.__dirty) {
+        if (line.__state === 'dirty') {
           $log.debug('Line is dirty');
           if (new Date() - line.__lastChange > 1000) {
             $log.debug('Line is stable.');
@@ -111,7 +115,7 @@ angular.module('dockerIde').factory('BuildManager', [
             this.scheduleProcessChanges();
           }
           break;
-        } else if (line.__error) {
+        } else if (line.__state === 'error') {
           break;
         }
 

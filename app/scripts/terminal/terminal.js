@@ -45,43 +45,33 @@ app.directive('terminal', [
         terminal.reset();
       });
 
-//      scope.$watch('imageId', function(imageId) {
-//
-//        if (socket) {
-//          socket.close();
-//          socket = null;
-//        }
-//
-//        if (imageId) {
-          docker.connect(scope.imageId).then(
-            function(newSocket) {
-              socket = newSocket;
-              socket.onopen = function() {
-                scope.$apply(function() {
-                  scope.$broadcast('socket:open');
-                });
-              };
-              socket.onclose = function() {
-                scope.$apply(function() {
-                  scope.$broadcast('socket:close');
-                });
-              };
-              socket.onmessage = function(event) {
-                scope.$apply(function() {
-                  scope.$broadcast('socket:data', event.data);
-                });
-              };
-              socket.onerror = function(event) {
-                scope.$apply(function() {
-                  scope.$broadcast('socket:error', event);
-                });
-              };
-            },
-            function(message) {
-              $log.debug('Error creating container.', message);
+      docker.connect(scope.imageId).then(
+        function(newSocket) {
+          socket = newSocket;
+          socket.onopen = function() {
+            scope.$apply(function() {
+              scope.$broadcast('socket:open');
             });
-//        }
-//      });
+          };
+          socket.onclose = function() {
+            scope.$apply(function() {
+              scope.$broadcast('socket:close');
+            });
+          };
+          socket.onmessage = function(event) {
+            scope.$apply(function() {
+              scope.$broadcast('socket:data', event.data);
+            });
+          };
+          socket.onerror = function(event) {
+            scope.$apply(function() {
+              scope.$broadcast('socket:error', event);
+            });
+          };
+        },
+        function(message) {
+          $log.debug('Error creating container.', message);
+        });
     }
 
     return {

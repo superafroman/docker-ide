@@ -1,18 +1,29 @@
 'use strict';
 
+var GUTTER_NAME = 'line-status';
+
 function LineStatusService() {
 }
 
 LineStatusService.prototype.update = function(codeMirror, line) {
 
-  if (line.__error) {
-
+  function createMarker(classes) {
+    return angular.element('<i class="fa fa-fw ' + classes + '"></i>')[0];
   }
 
-  // building codeMirror.setGutterMarker(line, 'build-status', angular.element('<i class="fa fa-fw fa-spinner fa-spin"></i>')[0]);
-  // ready    codeMirror.setGutterMarker(line, 'build-status', angular.element('<i class="fa fa-fw fa-plug"></i>')[0]);
-  // loading  codeMirror.setGutterMarker(line, 'build-status', angular.element('<i class="fa fa-fw fa-spinner fa-spin"></i>')[0]);
-  // terminal-active codeMirror.setGutterMarker($scope.activeLine, 'build-status', angular.element('<i class="fa fa-fw fa-code"></i>')[0]);
+  switch (line.__state) {
+    case 'loading':
+      codeMirror.setGutterMarker(line, GUTTER_NAME, createMarker('fa-spinner fa-spin'));
+      break;
+    case 'built':
+      codeMirror.setGutterMarker(line, GUTTER_NAME, createMarker('fa-plug'));
+      break;
+    case 'connected':
+      codeMirror.setGutterMarker(line, GUTTER_NAME, createMarker('fa-terminal'));
+      break;
+    default:
+      codeMirror.setGutterMarker(line, GUTTER_NAME, null);
+  }
 };
 
 angular.module('dockerIde').service('lineStatusService', [LineStatusService]);

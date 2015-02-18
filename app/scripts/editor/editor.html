@@ -14,7 +14,11 @@
 </div>
 
 <tabset class="terminal-tabs" ng-show="terminals.length">
-    <tab ng-repeat="terminal in terminals" heading="{{ terminal.title }}" active="terminal.active">
+    <tab ng-repeat="terminal in terminals" active="terminal.active">
+        <tab-heading>
+            <a class="close" ng-click="terminalClosed($index)"><i class="fa fa-times"></i></a>
+            {{ terminal.title }}
+        </tab-heading>
         <terminal image-id="terminal.imageId" on-open="terminalOpened($index)" on-close="terminalClosed($index)"></terminal>
     </tab>
 </tabset>
