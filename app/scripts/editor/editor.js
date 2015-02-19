@@ -21,6 +21,11 @@ angular.module('dockerIde')
             }
 
             localStorageService.bind($scope, 'dockerfile');
+            $scope.$on('LocalStorageModule.notification.setitem', function(event, data) {
+              if (data.key === 'dockerfile') {
+                $scope.dockerfile = data.newvalue;
+              }
+            });
 
             $scope.terminals = [];
 
@@ -77,8 +82,14 @@ angular.module('dockerIde')
                   });
                 }
                 forward('change');
+                forward('focus');
                 forward('gutterClick');
 
+                codeMirror.on('cm:focus', function() {
+                  if (!$state.is('editor')) {
+                    $state.go('editor');
+                  }
+                });
                 codeMirror.on('cm:gutterClick', function(lineNumber) {
                   handleGutterClick(lineNumber);
                 });
