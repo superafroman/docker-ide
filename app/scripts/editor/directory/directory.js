@@ -16,6 +16,7 @@ angular.module('dockerIde')
             controller: [
               '$scope', '$log', '$timeout', 'localStorageService', 'docker',
               function($scope, $log, $timeout, localStorageService, docker) {
+
                 localStorageService.bind($scope, 'directory');
 
                 $scope.state = '';
@@ -70,7 +71,9 @@ angular.module('dockerIde')
 
                       if (file.path === 'Dockerfile') {
                         fileReader.onload = function() {
-                          localStorageService.set('dockerfile', fileReader.result);
+                          $timeout(function() {
+                            localStorageService.set('dockerfile', fileReader.result);
+                          });
                           nextFile(index + 1);
                         };
                         fileReader.readAsText(file);

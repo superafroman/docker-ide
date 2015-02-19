@@ -16,8 +16,6 @@ LineStatusService.prototype.update = function(codeMirror, line) {
       codeMirror.setGutterMarker(line, GUTTER_NAME, createMarker('fa-refresh fa-spin'));
       break;
     case 'built':
-      codeMirror.setGutterMarker(line, GUTTER_NAME, createMarker('fa-plug'));
-      break;
     case 'connected':
       codeMirror.setGutterMarker(line, GUTTER_NAME, createMarker('fa-terminal'));
       break;
