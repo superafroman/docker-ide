@@ -103,7 +103,7 @@ p {
       font-size: rem-calc(12px);
     }
 
-    $slide-duration: .4s;
+    $slide-duration: .5s;
 
     &.ng-enter, &.ng-leave {
       transition: all $slide-duration ease;
@@ -122,9 +122,15 @@ p {
 .terminal-tabs {
   position: absolute;
   bottom: 0px;
-  z-index: 100;
+  z-index: 200;
   width: 100%;
-  transition: bottom linear 0.5s;
+
+  $slide-duration: .5s;
+
+  &.ng-hide-add.ng-hide-add-active,
+  &.ng-hide-remove.ng-hide-remove-active {
+    transition: all $slide-duration ease;
+  }
 
   &.ng-hide {
     bottom: -400px;
@@ -134,7 +140,7 @@ p {
     background-color: $tabs-navigation-bg-color;
     .close {
       color: lighten($tabs-navigation-bg-color, 20%);
-      padding-right: 0.5em;
+      padding-right: 0.3em;
       i {
         transition: transform cubic-bezier(.46,-0.49,.33,1.35) .5s;
       }
