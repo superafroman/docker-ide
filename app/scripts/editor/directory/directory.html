@@ -1,0 +1,16 @@
+
+<div class="row">
+    <div class="column">
+        <button class="small-12 file" ng-switch="state" ng-class="{ alert: state === 'failure' }">
+            <span ng-switch-when="loading"><i class="fa fa-spinner fa-spin"></i></span>
+            <span ng-switch-when="failure"><i class="fa fa-times"></i></span>
+            <div ng-switch-default>
+                Select directory <input type="file" ng-file-select="selectDirectory($files)" directory webkitdirectory mozdirectory>
+            </div>
+        </button>
+
+        <p>
+            Choose a directory containing an existing Dockerfile and any context data required for building your image.
+        </p>
+    </div>
+</div>

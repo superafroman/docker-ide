@@ -11,14 +11,11 @@ angular
     'ui.router',
     'ui.codemirror',
     'mm.foundation',
-    'LocalStorageModule'
+    'LocalStorageModule',
+    'angularFileUpload'
   ])
   .run(['$rootScope', '$http', '$window', '$state',
     function($rootScope, $http, $window, $state) {
-      $rootScope.$on('$stateChangeSuccess', function() {
-        $window.scrollTo(0, 0);
-      });
-
       $rootScope.$state = $state;
     }])
   .config(['$urlRouterProvider',

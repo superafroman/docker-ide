@@ -24,6 +24,10 @@ app.factory('docker', [
       return host;
     }
 
+    Docker.prototype.setContext = function(context) {
+      this.context = context;
+    };
+
     Docker.prototype.ping = function() {
       var host = getUrl();
       return $http.get(host + '/_ping', { timeout: 2000 });
@@ -69,8 +73,14 @@ app.factory('docker', [
       $log.debug('Sending build request.');
 
       var tar = new Tar(),
-          output = tar.append('Dockerfile', dockerfile),
+          output,
           host = getUrl();
+
+      if (this.context) {
+        tar.out = new Uint8Array(this.context.out);
+        tar.written = this.context.written;
+      }
+      output = tar.append('Dockerfile', dockerfile);
 
       var deferred = $q.defer();
 

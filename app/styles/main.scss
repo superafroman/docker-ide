@@ -25,6 +25,25 @@ a {
   cursor: pointer;
 }
 
+button.file {
+  position: relative;
+  overflow: hidden;
+  input[type=file] {
+    position: absolute;
+    top: 0;
+    right: 0;
+    min-width: 100%;
+    min-height: 100%;
+    font-size: 100px;
+    text-align: right;
+    opacity: 0;
+    outline: none;
+    background: white;
+    cursor: inherit;
+    display: block;
+  }
+}
+
 [ng\:cloak], [ng-cloak], [data-ng-cloak], [x-ng-cloak], .ng-cloak, .x-ng-cloak {
   display: none !important;
 }
@@ -46,6 +65,7 @@ p {
   top: 0;
   right: 0;
   height: 100%;
+  z-index: 100;
 
   .icon-bar {
     float: right;
@@ -158,7 +178,7 @@ p {
   }
   .CodeMirror-gutters {
     background: $secondary-color;
-    border-right: 1px solid darken($secondary-color, 3%);
+    border-right: 1px solid $body-bg;
   }
 }
 

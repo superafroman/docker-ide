@@ -10,13 +10,18 @@ angular.module('dockerIde')
 
         templateUrl: 'scripts/editor/editor.html',
 
-        controller: ['$scope', '$state', '$log', '$timeout', 'docker', 'lineStatusService', 'BuildManager',
-          function ($scope, $state, $log, $timeout, docker, lineStatusService, BuildManager) {
+        controller: ['$scope', '$state', '$log', '$timeout', 'docker', 'lineStatusService', 'BuildManager', 'localStorageService',
+          function ($scope, $state, $log, $timeout, docker, lineStatusService, BuildManager, localStorageService) {
 
             var codeMirror,
                 buildManager;
 
-            $scope.dockerfile = '';
+            if (!localStorageService.get('dockerUrl') && !$state.includes('editor.settings')) {
+              $state.go('editor.settings');
+            }
+
+            localStorageService.bind($scope, 'dockerfile');
+
             $scope.terminals = [];
 
             function handleGutterClick(lineNumber) {
@@ -66,7 +71,7 @@ angular.module('dockerIde')
 
                 function forward(event) {
                   codeMirror.on(event, function(instance, data) {
-                    $scope.$apply(function() {
+                    $timeout(function() {
                       CodeMirror.signal(codeMirror, 'cm:' + event, data);
                     });
                   });
