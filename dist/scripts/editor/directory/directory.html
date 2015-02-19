@@ -2,18 +2,23 @@
 <div class="row">
     <div class="column">
         <button class="small-12 file" ng-switch="state" ng-class="{ alert: state === 'failure' }">
-            <span ng-switch-when="loading"><i class="fa fa-spinner fa-spin"></i></span>
+            <span ng-switch-when="loading"><i class="fa fa-circle-o-notch fa-spin"></i></span>
             <span ng-switch-when="failure"><i class="fa fa-times"></i></span>
             <div ng-switch-default>
-                Select directory <input type="file" ng-file-select="selectDirectory($files)" directory webkitdirectory mozdirectory>
+                Choose directory <input type="file" ng-file-select="selectDirectory($files)" directory webkitdirectory>
             </div>
         </button>
 
         <p>
-            Choose a directory containing an existing Dockerfile and any context data required for building your image.
+            Choose a directory containing files you need to be available to your Dockerfile. If the directory contains
+            a Dockerfile it will be loaded into the editor.
+        </p>
+        <p>
+            If your chosen directory contains a large number of files DockerIDE will most likely fall over. Consider
+            adding a .dockerignore file to reduce the number of files that get processed.
         </p>
 
-        <p>
+        <p class="label radius">
             Current directory: {{ directory || 'none '}}
         </p>
     </div>

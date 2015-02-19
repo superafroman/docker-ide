@@ -12,7 +12,7 @@
                 </div>
             </div>
             <button class="small-12" type="submit" ng-switch="state" ng-class="{ success: state === 'success', alert: state === 'failure' }">
-                <span ng-switch-when="loading"><i class="fa fa-spinner fa-spin"></i></span>
+                <span ng-switch-when="loading"><i class="fa fa-circle-o-notch fa-spin"></i></span>
                 <span ng-switch-when="success"><i class="fa fa-check"></i></span>
                 <span ng-switch-when="failure"><i class="fa fa-times"></i></span>
                 <span ng-switch-default>Test connection</span>
