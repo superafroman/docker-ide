@@ -16,8 +16,16 @@ app.factory('docker', [
     function Docker() {
     }
 
+    function getUrl() {
+      var host = localStorageService.get('dockerUrl');
+      if (!/^http/.test(host)) {
+        host = 'http://' + host;
+      }
+      return host;
+    }
+
     Docker.prototype.ping = function() {
-      var host = localStorageService.get('dockerHost');
+      var host = getUrl();
       return $http.get(host + '/_ping', { timeout: 2000 });
     };
 
@@ -25,7 +33,7 @@ app.factory('docker', [
       $log.debug('Sending connect request.');
 
       var deferred = $q.defer(),
-          host = localStorageService.get('dockerHost');
+          host = getUrl();
 
       $http.post(host + '/containers/create', {
         'AttachStdin': true,
@@ -62,7 +70,7 @@ app.factory('docker', [
 
       var tar = new Tar(),
           output = tar.append('Dockerfile', dockerfile),
-          host = localStorageService.get('dockerHost');
+          host = getUrl();
 
       var deferred = $q.defer();
 

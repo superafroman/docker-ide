@@ -9,9 +9,30 @@ angular.module('dockerIde')
           'side-bar': {
             templateUrl: 'scripts/editor/settings/settings.html',
             controller: [
-              '$scope', 'localStorageService',
-              function($scope, localStorageService) {
-                localStorageService.bind($scope, 'dockerHost');
+              '$scope', 'localStorageService', 'docker',
+              function($scope, localStorageService, docker) {
+                localStorageService.bind($scope, 'dockerUrl');
+
+                $scope.state = '';
+
+                $scope.testConnection = function() {
+                  if (!$scope.dockerUrl) {
+                    $scope.state = '';
+                    return;
+                  }
+                  $scope.state = 'loading';
+                  docker.ping().then(
+                    function() {
+                      $scope.state = 'success';
+                    },
+                    function() {
+                      $scope.state = 'failure';
+                    });
+                };
+
+                $scope.$watch('dockerUrl', function() {
+                  $scope.testConnection();
+                });
               }]
           }
         }

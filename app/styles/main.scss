@@ -2,8 +2,9 @@
 // endbower
 
 $secondary-color: #333;
-$primary-color: darken($secondary-color, 3%);
-$info-color: lighten($secondary-color, 10%);
+$primary-color: lighten($secondary-color, 10%);
+
+$body-bg: darken($secondary-color, 3%);
 
 $body-font-color: #f0f0f0;
 $body-font-family: "Open Sans", sans-serif;
@@ -22,10 +23,6 @@ $tabs-navigation-font-size: 0.8em;
 
 a {
   cursor: pointer;
-  color: $body-font-color;
-  &:hover {
-    color: darken($body-font-color, 10%);
-  }
 }
 
 [ng\:cloak], [ng-cloak], [data-ng-cloak], [x-ng-cloak], .ng-cloak, .x-ng-cloak {
@@ -43,22 +40,21 @@ p {
 }
 
 .side-bar {
-  $side-bar-content-background-color: $primary-color;
+  $side-bar-content-background-color: $body-bg;
 
   position: absolute;
   top: 0;
   right: 0;
-  border-left: 1px solid $side-bar-content-background-color;
   height: 100%;
-  background-color: $side-bar-content-background-color;
 
   .icon-bar {
     float: right;
+    position: relative;
   }
 
   .item {
     &.active {
-      background-color: $primary-color;
+      background-color: $body-bg;
     }
   }
 
@@ -77,10 +73,28 @@ p {
   }
 
   .side-bar-content {
+    background-color: $side-bar-content-background-color;
     display: inline-block;
     max-width: 400px;
+    padding-top: 1em;
+    height: 100%;
+
     p {
       font-size: rem-calc(12px);
+    }
+
+    $slide-duration: .4s;
+
+    &.ng-enter, &.ng-leave {
+      transition: all $slide-duration ease;
+    }
+
+    &.ng-enter {
+      animation: slideInRight $slide-duration both ease;
+    }
+
+    &.ng-leave {
+      animation: slideOutRight $slide-duration both ease;
     }
   }
 }
@@ -148,3 +162,11 @@ p {
   }
 }
 
+@keyframes slideOutRight {
+  to { transform: translateX(100%); }
+}
+
+@keyframes slideInRight {
+  from { transform: translateX(100%); }
+  to { transform: translateX(0%); }
+}
