@@ -3,10 +3,10 @@
 
 $secondary-color: #333;
 $primary-color: darken($secondary-color, 3%);
+$info-color: lighten($secondary-color, 10%);
 
+$body-font-color: #f0f0f0;
 $body-font-family: "Open Sans", sans-serif;
-
-$global-radius: 2px;
 
 $icon-bar-item-padding: 1em;
 
@@ -22,10 +22,20 @@ $tabs-navigation-font-size: 0.8em;
 
 a {
   cursor: pointer;
+  color: $body-font-color;
+  &:hover {
+    color: darken($body-font-color, 10%);
+  }
 }
 
 [ng\:cloak], [ng-cloak], [data-ng-cloak], [x-ng-cloak], .ng-cloak, .x-ng-cloak {
   display: none !important;
+}
+
+p {
+  .label {
+    margin: 0;
+  }
 }
 
 .line-status {
@@ -41,6 +51,10 @@ a {
   border-left: 1px solid $side-bar-content-background-color;
   height: 100%;
   background-color: $side-bar-content-background-color;
+
+  .icon-bar {
+    float: right;
+  }
 
   .item {
     &.active {
@@ -64,6 +78,10 @@ a {
 
   .side-bar-content {
     display: inline-block;
+    max-width: 400px;
+    p {
+      font-size: rem-calc(12px);
+    }
   }
 }
 

@@ -1,11 +1,32 @@
 
 <form role="form" name="form" novalidate>
     <div class="row">
-        <div class="large-12 column" ng-class="{ error: form.host.$dirty && form.host.$error.required }">
-            <label>Name:
-                <input type="text" name="host" ng-model="dockerHost" required>
-            </label>
-            <small class="error" ng-show="form.host.$dirty && form.host.$error.required">Name is required.</small>
+        <div class="column" ng-class="{ error: form.host.$dirty && form.host.$error.required }">
+            <div class="row collapse prefix-radius">
+                <div class="small-3 columns">
+                    <span class="prefix">Host</span>
+                </div>
+                <div class="small-9 columns">
+                    <input type="text" name="host" ng-model="dockerHost" required>
+                </div>
+            </div>
+            <small class="error" ng-show="form.host.$dirty && form.host.$error.required">Host is required.</small>
         </div>
     </div>
 </form>
+
+<div class="row">
+    <div class="column">
+        <p>
+            To allow DockerIDE to connect to your Docker instance you need to start Docker with
+            <span class="info label radius">--api-enable-cors</span>
+        </p>
+        <p>
+            You'll also need to either configure your browser to accept Docker's SSL certificate or disable it with
+            <span class="info label radius">export DOCKER_TLS=no</span>
+        </p>
+        <p>
+            For more details checkout <a href="https://github.com/superafroman/docker-ide">https://github.com/superafroman/docker-ide</a>
+        </p>
+    </div>
+</div>
