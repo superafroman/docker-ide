@@ -4,6 +4,5 @@ tmp/
 .idea
 .sass-cache
 .tmp
-dist
 *.iml
 bower_components
