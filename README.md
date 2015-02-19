@@ -3,6 +3,8 @@
 Docker IDE is really just a simple editor for Dockerfiles that allows you to connect to a docker host and build your 
 image as you configure it giving quick feedback.
 
+You can see it running at http://superafroman.github.io/docker-ide
+
 ## Configure Docker to allow access
 
 This is a proof-of-concept and so currently requires you to enable CORS in the Docker API.  You will also need to disable
