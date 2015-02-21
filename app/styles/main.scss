@@ -186,6 +186,13 @@ p {
     background: $secondary-color;
     border-right: 1px solid $body-bg;
   }
+
+  .cm-instruction {
+    color: #669199;
+  }
+
+  .cm-argument {
+  }
 }
 
 @keyframes slideOutRight {

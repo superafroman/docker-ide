@@ -33,9 +33,10 @@
       "main": [
         "lib/codemirror.js",
         "lib/codemirror.css",
+        "theme/lesser-dark.css",
         "addon/mode/simple.js",
-        "mode/dockerfile/dockerfile.js",
-        "theme/lesser-dark.css"
+        "addon/hint/show-hint.js",
+        "addon/hint/show-hint.css"
       ]
     }
   },

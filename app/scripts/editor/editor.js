@@ -68,6 +68,9 @@ angular.module('dockerIde')
 
             $scope.options = {
               lineNumbers: true,
+              extraKeys: {
+                'Ctrl-Space': 'autocomplete'
+              },
               mode: 'dockerfile',
               theme: 'lesser-dark',
               gutters: [ 'line-status' ],

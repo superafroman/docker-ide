@@ -12,6 +12,7 @@
         <link rel="stylesheet" href="bower_components/font-awesome/css/font-awesome.css" />
         <link rel="stylesheet" href="bower_components/codemirror/lib/codemirror.css" />
         <link rel="stylesheet" href="bower_components/codemirror/theme/lesser-dark.css" />
+        <link rel="stylesheet" href="bower_components/codemirror/addon/hint/show-hint.css" />
         <!-- endbower -->
         <!-- endbuild -->
         <!-- build:css(.tmp) styles/main.css -->
@@ -49,7 +50,7 @@
         <script src="bower_components/angular-foundation/mm-foundation-tpls.js"></script>
         <script src="bower_components/codemirror/lib/codemirror.js"></script>
         <script src="bower_components/codemirror/addon/mode/simple.js"></script>
-        <script src="bower_components/codemirror/mode/dockerfile/dockerfile.js"></script>
+        <script src="bower_components/codemirror/addon/hint/show-hint.js"></script>
         <script src="bower_components/angular-ui-codemirror/ui-codemirror.js"></script>
         <script src="bower_components/angular-local-storage/dist/angular-local-storage.js"></script>
         <script src="bower_components/ng-file-upload/angular-file-upload.js"></script>
@@ -69,6 +70,8 @@
         <script src="scripts/editor/build-manager.js"></script>
         <script src="scripts/editor/line-status.js"></script>
         <script src="scripts/editor/directory/directory.js"></script>
+        <script src="scripts/editor/mode/dockerfile-mode.js"></script>
+        <script src="scripts/editor/mode/dockerfile-hint.js"></script>
         <script src="scripts/editor/settings/settings.js"></script>
 
         <script src="scripts/terminal/terminal.js"></script>
