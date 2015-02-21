@@ -108,23 +108,25 @@ angular.module('dockerIde').factory('BuildManager', [
             setState(lines, 'built');
             line.__imageId = result.imageId;
             buildManager.scheduleProcessChanges();
-          } else {
-            $log.debug('Image build failed. Error:', result.message);
+          }
+          lineStatusService.update(codeMirror, line);
+        },
+        function(error) {
+          if (error) {
+            $log.debug('Image build failed. Error:', error.message);
             if (lines.some(function(l) { return l.__state === 'dirty'; })) {
               // At least one line has been updated since triggering build.
               setState(lines, 'dirty');
               buildManager.scheduleProcessChanges();
             } else {
               setState(lines, 'error');
-              displayError(codeMirror, lines[lines.length - 1], result.message);
+              displayError(codeMirror, lines[lines.length - 1], error.message);
             }
+          } else {
+            $log.debug('Docker build request failed, will retry.', error);
+            setState(lines, 'dirty');
+            buildManager.scheduleProcessChanges();
           }
-          lineStatusService.update(codeMirror, line);
-        },
-        function(message) {
-          $log.debug('Docker build request failed, will retry.', message);
-          setState(lines, 'dirty');
-          buildManager.scheduleProcessChanges();
         });
     };
 

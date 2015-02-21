@@ -111,11 +111,16 @@ app.factory('docker', [
         }
       }).then(
         function(response) {
-          $log.debug('Build image successful.', response);
-          deferred.resolve(response.data);
+          $log.debug('Build image request successful.', response);
+          var result = response.data;
+          if (result.state === 'success') {
+            deferred.resolve(result);
+          } else {
+            deferred.reject(result);
+          }
         },
         function(response) {
-          $log.debug('Build image failed.', response);
+          $log.debug('Build image request failed.', response);
           deferred.reject(response.data);
         });
       return deferred.promise;
