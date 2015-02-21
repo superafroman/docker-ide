@@ -16,11 +16,11 @@ app.run([
 
     CodeMirror.defineSimpleMode('dockerfile', {
       start: [
-        { regex: instructionsRegExp, token: [ 'instruction', null ], dedent: true },
+        { regex: instructionsRegExp, token: [ 'instruction', null ] },
         { regex: /"(?:[^\\]|\\.)*?"/, token: 'string' },
         { regex: /0x[a-f\d]+|[-+]?(?:\.\d+|\d+\.?\d*)(?:e[-+]?\d+)?/i, token: 'number' },
         { regex: /#.*$/, token: 'comment' },
-        { regex: /\\(\s)*$/, indent: true },
+        { regex: /\\(\s)*$/ },
         { regex: /[^\s]+/, token: 'argument'}
       ],
       meta: {
