@@ -74,6 +74,7 @@ angular.module('dockerIde')
               mode: 'dockerfile',
               theme: 'lesser-dark',
               gutters: [ 'line-status' ],
+              autoCloseBrackets: true,
               onLoad: function (instance) {
                 codeMirror = instance;
 

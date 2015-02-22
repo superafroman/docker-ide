@@ -36,7 +36,8 @@
         "theme/lesser-dark.css",
         "addon/mode/simple.js",
         "addon/hint/show-hint.js",
-        "addon/hint/show-hint.css"
+        "addon/hint/show-hint.css",
+        "addon/edit/closebrackets.js"
       ]
     }
   },

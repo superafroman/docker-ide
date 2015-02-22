@@ -12,16 +12,17 @@ app.run([
   'DOCKER_INSTRUCTIONS',
   function(instructions) {
 
-    var instructionsRegExp = new RegExp('\\s*(' + instructions.join('|') + ')(\\s|$)', 'i');
+    var instructionsRegExp = new RegExp('(\\s*)(' + instructions.join('|') + ')(\\s|$)', 'i');
 
     CodeMirror.defineSimpleMode('dockerfile', {
       start: [
-        { regex: instructionsRegExp, token: [ 'instruction', null ] },
+        { regex: instructionsRegExp, token: [ null, 'instruction', null ] },
         { regex: /"(?:[^\\]|\\.)*?"/, token: 'string' },
         { regex: /0x[a-f\d]+|[-+]?(?:\.\d+|\d+\.?\d*)(?:e[-+]?\d+)?/i, token: 'number' },
         { regex: /#.*$/, token: 'comment' },
-        { regex: /\\(\s)*$/ },
-        { regex: /[^\s]+/, token: 'argument'}
+        { regex: /\\(\s)*$/, indent: true },
+        { regex: /[^\s]+/, token: 'argument'},
+        { regex: /^\s*$/, dedent: true }
       ],
       meta: {
         lineComment: '#'
