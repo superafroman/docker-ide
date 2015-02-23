@@ -10,11 +10,13 @@ angular.module('dockerIde')
 
         templateUrl: 'scripts/editor/editor.html',
 
-        controller: ['$scope', '$state', '$log', '$timeout', 'docker', 'lineStatusService', 'BuildManager', 'localStorageService',
-          function ($scope, $state, $log, $timeout, docker, lineStatusService, BuildManager, localStorageService) {
+        controller: [
+          '$scope', '$state', '$timeout', 'BuildManager', 'TerminalManager', 'localStorageService',
+          function ($scope, $state, $timeout, BuildManager, TerminalManager, localStorageService) {
 
             var codeMirror,
-                buildManager;
+              buildManager,
+              terminalManager;
 
             if (!localStorageService.get('dockerUrl') && !$state.includes('editor.settings')) {
               $state.go('editor.settings');
@@ -26,45 +28,6 @@ angular.module('dockerIde')
                 $scope.dockerfile = data.newvalue;
               }
             });
-
-            $scope.terminals = [];
-
-            function handleGutterClick(lineNumber) {
-              var line = codeMirror.getLineHandle(lineNumber),
-                  terminal;
-              $scope.terminals.some(function(t) {
-                if (t.imageId === line.__imageId) {
-                  terminal = t;
-                  return true;
-                }
-                return false;
-              });
-              if (terminal) {
-                terminal.active = true;
-              } else if (line.__imageId) {
-                line.__state = 'loading';
-                $scope.terminals.push({
-                  line: line,
-                  imageId: line.__imageId,
-                  title: line.text,
-                  active: true
-                });
-                lineStatusService.update(codeMirror, line);
-              }
-            }
-
-            $scope.terminalOpened = function(index) {
-              var line = $scope.terminals[index].line;
-              line.__state = 'connected';
-              lineStatusService.update(codeMirror, line);
-            };
-
-            $scope.terminalClosed = function(index) {
-              var line = $scope.terminals[index].line;
-              line.__state = 'built';
-              lineStatusService.update(codeMirror, line);
-              $scope.terminals.splice(index, 1);
-            };
 
             $scope.options = {
               lineNumbers: true,
@@ -94,11 +57,9 @@ angular.module('dockerIde')
                     $state.go('editor');
                   }
                 });
-                codeMirror.on('cm:gutterClick', function(lineNumber) {
-                  handleGutterClick(lineNumber);
-                });
 
                 buildManager = new BuildManager(codeMirror);
+                terminalManager = new TerminalManager($scope, codeMirror);
               }
             };
 

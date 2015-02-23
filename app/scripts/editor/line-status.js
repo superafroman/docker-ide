@@ -5,7 +5,12 @@ var GUTTER_NAME = 'line-status';
 function LineStatusService() {
 }
 
-LineStatusService.prototype.update = function(codeMirror, line) {
+LineStatusService.prototype.update = function(codeMirror, line, state) {
+
+  if (line.__state === state) {
+    return;
+  }
+  line.__state = state;
 
   function createMarker(classes) {
     return angular.element('<i class="fa fa-fw ' + classes + '"></i>')[0];

@@ -59,7 +59,7 @@ angular.module('dockerIde').factory('BuildManager', [
 
           // Line is only dirty if it's not a comment and has content.
           if (!(/^$|^#/.test(line.text.trim()))) {
-            line.__state = 'dirty';
+            lineStatusService.update(codeMirror, line, 'dirty');
           } else {
             line.__imageId = null;
           }
@@ -69,7 +69,6 @@ angular.module('dockerIde').factory('BuildManager', [
             codeMirror.removeLineClass(line, 'text', 'cm-error');
             line.widgets.forEach(clearWidget);
           }
-          lineStatusService.update(codeMirror, line);
           continuing = includesNextLine(line);
         }
         // if still continuing then either there's an error or the current command isn't finished, so don't bother
@@ -90,10 +89,7 @@ angular.module('dockerIde').factory('BuildManager', [
 
       function setState(lines, state) {
         lines.forEach(function(l) {
-          if (l.__state !== state) {
-            l.__state = state;
-            lineStatusService.update(codeMirror, l);
-          }
+          lineStatusService.update(codeMirror, l, state);
         });
       }
 
