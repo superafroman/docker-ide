@@ -11,16 +11,27 @@ LineStatusService.prototype.update = function(codeMirror, line) {
     return angular.element('<i class="fa fa-fw ' + classes + '"></i>')[0];
   }
 
-  switch (line.__state) {
-    case 'loading':
-      codeMirror.setGutterMarker(line, GUTTER_NAME, createMarker('fa-refresh fa-spin'));
-      break;
-    case 'built':
-    case 'connected':
-      codeMirror.setGutterMarker(line, GUTTER_NAME, createMarker('fa-terminal'));
-      break;
-    default:
-      codeMirror.setGutterMarker(line, GUTTER_NAME, null);
+  function clearMarker() {
+    codeMirror.setGutterMarker(line, GUTTER_NAME, null);
+  }
+
+  if (line.__continuation) {
+    clearMarker();
+  } else {
+    switch (line.__state) {
+      case 'loading':
+        codeMirror.setGutterMarker(line, GUTTER_NAME, createMarker('fa-refresh fa-spin'));
+        break;
+      case 'built':
+      case 'connected':
+        codeMirror.setGutterMarker(line, GUTTER_NAME, createMarker('fa-terminal'));
+        break;
+      case 'error':
+        codeMirror.setGutterMarker(line, GUTTER_NAME, createMarker('fa-circle alert'));
+        break;
+      default:
+        clearMarker();
+    }
   }
 };
 

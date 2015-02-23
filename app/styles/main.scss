@@ -21,6 +21,10 @@ $tabs-navigation-font-size: 0.8em;
 @import "foundation/scss/foundation";
 // end foundation
 
+[ng\:cloak], [ng-cloak], [data-ng-cloak], [x-ng-cloak], .ng-cloak, .x-ng-cloak {
+  display: none !important;
+}
+
 a {
   cursor: pointer;
 }
@@ -44,8 +48,10 @@ button.file {
   }
 }
 
-[ng\:cloak], [ng-cloak], [data-ng-cloak], [x-ng-cloak], .ng-cloak, .x-ng-cloak {
-  display: none !important;
+i {
+  &.alert {
+    color: $alert-color;
+  }
 }
 
 p {
@@ -189,9 +195,6 @@ p {
 
   .cm-instruction {
     color: #669199;
-  }
-
-  .cm-argument {
   }
 }
 

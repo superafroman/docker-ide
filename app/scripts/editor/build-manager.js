@@ -11,6 +11,7 @@ angular.module('dockerIde').factory('BuildManager', [
     }
 
     function displayError(codeMirror, line, message) {
+      codeMirror.addLineClass(line, 'text', 'cm-error');
       codeMirror.addLineWidget(line, angular.element('<span class="cm-error">' + message + '</span>')[0]);
     }
 
@@ -54,17 +55,18 @@ angular.module('dockerIde').factory('BuildManager', [
         var continuing = false;
         for (; lineNumber <= lastLine; lineNumber++) {
           line = codeMirror.getLineHandle(lineNumber);
+          line.__continuation = continuing;
+
           // Line is only dirty if it's not a comment and has content.
           if (!(/^$|^#/.test(line.text.trim()))) {
             line.__state = 'dirty';
-          } else if (continuing) {
-            displayError(codeMirror, line, 'Comment within line continuation');
           } else {
             line.__imageId = null;
           }
           line.__lastChange = new Date();
           line.__error = null;
           if (line.widgets) {
+            codeMirror.removeLineClass(line, 'text', 'cm-error');
             line.widgets.forEach(clearWidget);
           }
           lineStatusService.update(codeMirror, line);
@@ -87,11 +89,15 @@ angular.module('dockerIde').factory('BuildManager', [
           dockerfile = '';
 
       function setState(lines, state) {
-        lines.forEach(function(l) {l.__state = state; });
+        lines.forEach(function(l) {
+          if (l.__state !== state) {
+            l.__state = state;
+            lineStatusService.update(codeMirror, l);
+          }
+        });
       }
 
       setState(lines, 'loading');
-      lineStatusService.update(codeMirror, line);
 
       if (previousImageId) {
         dockerfile = 'FROM ' + previousImageId + '\n';
@@ -103,13 +109,10 @@ angular.module('dockerIde').factory('BuildManager', [
 
       docker.build(dockerfile).then(
         function(result) {
-          if (result.state === 'success') {
-            $log.debug('Image build successful');
-            setState(lines, 'built');
-            line.__imageId = result.imageId;
-            buildManager.scheduleProcessChanges();
-          }
-          lineStatusService.update(codeMirror, line);
+          $log.debug('Image build successful');
+          setState(lines, 'built');
+          line.__imageId = result.imageId;
+          buildManager.scheduleProcessChanges();
         },
         function(error) {
           if (error) {
