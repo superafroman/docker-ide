@@ -182,15 +182,23 @@ p {
 
 .cm-s-lesser-dark {
   $editor-background-color: darken($secondary-color, 10%);
+
   &.CodeMirror {
     background: $editor-background-color;
     color: #EBEFE7;
     text-shadow: 0 -1px 1px #262626;
     height: calc(100vh);
   }
+
   .CodeMirror-gutters {
     background: $secondary-color;
     border-right: 1px solid $body-bg;
+  }
+
+  .CodeMirror-gutter-wrapper {
+    .fa-terminal {
+      cursor: pointer;
+    }
   }
 
   .cm-instruction {

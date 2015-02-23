@@ -46,7 +46,7 @@ app.factory('docker', [
         'Tty': true,
         'OpenStdin': true,
         'StdinOnce': true,
-        'Cmd': [ '/bin/sh' ],
+        'Entrypoint': [ '/bin/sh' ],
         'Image': imageId
       }).then(
         function(response) {
