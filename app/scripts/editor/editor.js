@@ -11,14 +11,14 @@ angular.module('dockerIde')
         templateUrl: 'scripts/editor/editor.html',
 
         controller: [
-          '$scope', '$state', '$timeout', 'BuildManager', 'TerminalManager', 'localStorageService',
-          function ($scope, $state, $timeout, BuildManager, TerminalManager, localStorageService) {
+          '$scope', '$state', '$timeout', 'MODE', 'BuildManager', 'TerminalManager', 'localStorageService',
+          function ($scope, $state, $timeout, mode, BuildManager, TerminalManager, localStorageService) {
 
             var codeMirror,
               buildManager,
               terminalManager;
 
-            if (localStorageService.get('dockerUrl') === undefined && !$state.includes('editor.settings')) {
+            if (mode !== 'embedded' && !localStorageService.get('dockerUrl') && !$state.includes('editor.settings')) {
               $state.go('editor.settings');
             }
 
