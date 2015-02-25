@@ -74,8 +74,9 @@ p {
   z-index: 100;
 
   .icon-bar {
-    float: right;
-    position: relative;
+    position: absolute;
+    top: 0;
+    right: 0;
   }
 
   .item {
@@ -104,13 +105,14 @@ p {
     max-width: 400px;
     padding-top: 1em;
     height: 100%;
+    margin-right: 71px;
 
     p {
       font-size: rem-calc(12px);
     }
 
     $slide-duration: .5s;
-
+    /*
     &.ng-enter, &.ng-leave {
       transition: all $slide-duration ease;
     }
@@ -122,6 +124,7 @@ p {
     &.ng-leave {
       animation: slideOutRight $slide-duration both ease;
     }
+    */
   }
 }
 
@@ -133,10 +136,12 @@ p {
 
   $slide-duration: .5s;
 
+  /*
   &.ng-hide-add.ng-hide-add-active,
   &.ng-hide-remove.ng-hide-remove-active {
     transition: all $slide-duration ease;
   }
+  */
 
   &.ng-hide {
     bottom: -400px;

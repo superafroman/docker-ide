@@ -18,7 +18,7 @@ angular.module('dockerIde')
               buildManager,
               terminalManager;
 
-            if (!localStorageService.get('dockerUrl') && !$state.includes('editor.settings')) {
+            if (localStorageService.get('dockerUrl') === undefined && !$state.includes('editor.settings')) {
               $state.go('editor.settings');
             }
 

@@ -1,7 +1,8 @@
 'use strict';
 
-angular.module('dockerIde')
-  .config(['$stateProvider',
+var app = angular.module('dockerIde');
+
+app.config(['$stateProvider',
     function ($stateProvider) {
       $stateProvider.state('editor.settings', {
         url: 'settings',

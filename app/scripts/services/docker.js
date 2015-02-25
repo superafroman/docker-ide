@@ -10,13 +10,16 @@ Tar = require('tar-js');
 /* jshint ignore:end */
 
 app.factory('docker', [
-  '$http', '$log', '$q', 'localStorageService',
-  function ($http, $log, $q, localStorageService) {
+  '$http', '$log', '$q', '$location', 'MODE', 'localStorageService',
+  function ($http, $log, $q, $location, mode, localStorageService) {
 
     function Docker() {
     }
 
     function getUrl() {
+      if (mode === 'embedded') {
+        return $location.protocol() + '://' + $location.host() + ':' + $location.port();
+      }
       var host = localStorageService.get('dockerUrl');
       if (!/^http/.test(host)) {
         host = 'http://' + host;
