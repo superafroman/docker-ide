@@ -20,7 +20,8 @@ angular
       $rootScope.$state = $state;
       $rootScope.mode = MODE;
     }])
-  .config(['$urlRouterProvider',
-    function ($urlRouterProvider) {
+  .config(['$compileProvider', '$urlRouterProvider',
+    function ($compileProvider, $urlRouterProvider) {
+      $compileProvider.aHrefSanitizationWhitelist(/^\s*(https?|data):/);
       $urlRouterProvider.otherwise('/');
   }]);

@@ -23,6 +23,7 @@ angular.module('dockerIde')
             }
 
             localStorageService.bind($scope, 'dockerfile');
+
             $scope.$on('LocalStorageModule.notification.setitem', function(event, data) {
               if (data.key === 'dockerfile') {
                 $scope.dockerfile = data.newvalue;
@@ -73,3 +74,7 @@ angular.module('dockerIde')
           }]
       });
     }]);
+
+app.filter('encodeURIComponent', function() {
+  return window.encodeURIComponent;
+});
