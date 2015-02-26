@@ -21,7 +21,7 @@ app.factory('docker', [
         return $location.protocol() + '://' + $location.host() + ':' + $location.port();
       }
       var host = localStorageService.get('dockerUrl');
-      if (!/^http/.test(host)) {
+      if (host && !/^http/.test(host)) {
         host = 'http://' + host;
       }
       return host;

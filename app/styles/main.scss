@@ -66,6 +66,7 @@ p {
 
 .side-bar {
   $side-bar-content-background-color: $body-bg;
+  $side-bar-item-width: 71px;
 
   position: absolute;
   top: 0;
@@ -83,6 +84,11 @@ p {
     &.active {
       background-color: $body-bg;
     }
+  }
+
+  .github {
+    position: fixed;
+    bottom: $side-bar-item-width;
   }
 
   .logo {
@@ -105,7 +111,7 @@ p {
     max-width: 400px;
     padding-top: 1em;
     height: 100%;
-    margin-right: 71px;
+    margin-right: $side-bar-item-width;
 
     p {
       font-size: rem-calc(12px);
