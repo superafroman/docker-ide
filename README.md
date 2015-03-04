@@ -5,6 +5,15 @@ image as you configure it giving quick feedback.
 
 You can see it running at http://superafroman.github.io/docker-ide
 
+## Run with Docker
+To avoid the security risks of CORS and running Docker without TLS you can run DockerIDE as a container, sharing the host Docker socket.
+
+```
+docker run -p 80:80 -v /var/run/docker.sock:/var/run/docker.sock --name docker-ide superafroman/docker-ide
+```
+
+This will make DockerIDE available at http://localhost or if you're using boot2docker whatever the IP address of your Docker host is.
+
 ## Configure Docker to allow access
 
 This is a proof-of-concept and so currently requires you to enable CORS in the Docker API.  You will also need to disable
